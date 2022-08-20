@@ -34,6 +34,10 @@
 				"Mac",
 				"Linux"
 			]
+		},
+		{
+			"Name": "UE4Duino",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
