@@ -42,6 +42,10 @@
 		{
 			"Name": "OnlineSubsystemOculus",
 			"Enabled": true
+		},
+		{
+			"Name": "UE4Duino",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
