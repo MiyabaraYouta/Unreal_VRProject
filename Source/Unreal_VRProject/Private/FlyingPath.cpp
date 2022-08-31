@@ -30,14 +30,25 @@ void AFlyingPath::Tick(float DeltaTime)
 
     closestPointsToPlayer = GetClosestPointsOnAreaX(currentSegment_, searchDepth, segments, playerPos_->GetActorLocation());
 
-   
- /*   closestPoint = FindClosestPoint(closestPointsToPlayer, currentSegment_, playerPos_->GetActorLocation());
+
+    if (closestPointsToPlayer.Num() == 0)
+        return;
+
+
+    if (GEngine)
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Position: %f"), closestPointsToPlayer[0].checkedDistance));
+
+    closestPoint = FindClosestPoint(closestPointsToPlayer, currentSegment_, playerPos_->GetActorLocation());
+
 
     if (closestPoint.checkedDistance > (pathRadius * pathRadius))
     {
-        if (GEngine)
-            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Out of Path!"));
-    }*/
+       //TODO　パスから出た場合、力を与える処理
+
+       //
+       /* if (GEngine)
+            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Out of Path!"));*/
+    }
 
 }
 
@@ -45,10 +56,13 @@ TArray<PathPoint> AFlyingPath::GetClosestPointsOnAreaX(int currentSegmentOnThePa
 {
     TArray<PathPoint> ret;
 
-    for (int i = -x; i < x; i++)
+    for (int i = -x; i <= x; i++)
     {
-        if (currentSegmentOnThePath + i < 0 || currentSegmentOnThePath + i >= seg.Num())
+        if (currentSegmentOnThePath + i < 0)
             continue;
+
+        if (currentSegmentOnThePath + i >= seg.Num())
+            break;
 
         ret.Add(seg[currentSegmentOnThePath + i].FindClosestPointToPlayer(playerPos));
     }
@@ -60,12 +74,11 @@ PathPoint AFlyingPath::FindClosestPoint(TArray<PathPoint> points, int &currentSe
     double distance;
 
     PathPoint retPoint = points[0];
-
-    distance = points[0].GetDistanceToCoordinate(playerPos);
+    distance = retPoint.checkedDistance;
 
     for (int i = 1; i < points.Num(); i++)
     {
-        double tempDistance = points[i].GetDistanceToCoordinate(playerPos);
+        double tempDistance = points[i].checkedDistance;
 
         if (tempDistance < distance)
         {

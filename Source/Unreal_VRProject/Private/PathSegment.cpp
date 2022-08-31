@@ -38,8 +38,6 @@ TArray<PathPoint> PathSegment::BreakTheSegment(int iterations)
     for (int i = 0; i < brokenSegments.Num(); i++)
     {
         retPoints.Add(PathPoint(brokenSegments[i].startPos_, segmentNumber_));
-        if (GEngine)
-            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Position: %f-%f-%f"), brokenSegments[i].startPos_.X, brokenSegments[i].startPos_.Y, brokenSegments[i].startPos_.Z));
     }
     return retPoints;
 }
@@ -49,7 +47,7 @@ PathPoint PathSegment::FindClosestPointToPlayer(FVector pos)
     double distance;
     PathPoint retPoint = points[0];
     distance = retPoint.GetDistanceToCoordinate(pos);
-
+    retPoint.checkedDistance = distance;
     for (int i = 1; i < points.Num(); i++)
     {
         float tempDistance = points[i].GetDistanceToCoordinate(pos);
