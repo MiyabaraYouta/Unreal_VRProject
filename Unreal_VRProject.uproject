@@ -46,6 +46,10 @@
 		{
 			"Name": "UE4Duino",
 			"Enabled": true
+		},
+		{
+			"Name": "Metasound",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
