@@ -10,10 +10,12 @@ AFlyingPath::AFlyingPath()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-// Called when the game starts or when spawned
+//UnityのAwakeかStartと同じ
 void AFlyingPath::BeginPlay()
 {
 	Super::BeginPlay();
+	
+　　//セグメントとポイントの初期化
     for (int i = 0; i < pathCheckpoints.Num() - 1; i++)
     {
         PathSegment tempSegment(pathCheckpoints[i], pathCheckpoints[i + 1], i);
@@ -28,22 +30,23 @@ void AFlyingPath::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+//プレイヤに「searchDepth」セグメントの中から一番近いポイントを探す
     closestPointsToPlayer = GetClosestPointsOnAreaX(currentSegment_, searchDepth, segments, playerPos_->GetActorLocation());
-
-
+//リーク予防
     if (closestPointsToPlayer.Num() == 0)
         return;
 
-
+///ディバッグ
     if (GEngine)
         GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Position: %f"), closestPointsToPlayer[0].checkedDistance));
-
+///
+	
     closestPoint = FindClosestPoint(closestPointsToPlayer, currentSegment_, playerPos_->GetActorLocation());
 
-
+//パスの範囲内かどうか確認する
     if (closestPoint.checkedDistance > (pathRadius * pathRadius))
     {
-       //TODO�@�p�X����o���ꍇ�A�͂�^���鏈��
+       //TODO　パスから出た場合、力を与える処理
 
        //
        /* if (GEngine)
