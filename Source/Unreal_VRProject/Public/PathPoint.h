@@ -5,18 +5,21 @@
 #include "CoreMinimal.h"
 
 /**
- * 
+ * ポイントのクラス
  */
 class UNREAL_VRPROJECT_API PathPoint
 {
+	//ポイントの位置
 	FVector position_;
 public:
+	//「最適化」一回確認した距離をこちらに保存する
 	double checkedDistance;
+	//パスの中でこのポイントはどのセグメントに所属するか
 	int segment_;
+	//コンストラクタ「位置、セグメント」
 	PathPoint(FVector position, int segment);
 	PathPoint();
 	~PathPoint();
-
-	FVector GetPosition() const;
+	//ポイントからある位置までの距離
 	double   GetDistanceToCoordinate(FVector);
 };
