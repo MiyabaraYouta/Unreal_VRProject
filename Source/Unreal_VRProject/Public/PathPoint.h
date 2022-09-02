@@ -16,8 +16,11 @@ public:
 	double checkedDistance;
 	//パスの中でこのポイントはどのセグメントに所属するか
 	int segment_;
+	//セグメントの中でのポイントの番号
+	int numberInSegment_;
+
 	//コンストラクタ「位置、セグメント」
-	PathPoint(FVector position, int segment);
+	PathPoint(FVector position, int segment, int numberInSegment_);
 	PathPoint();
 	~PathPoint();
 	//ポイントからある位置までの距離

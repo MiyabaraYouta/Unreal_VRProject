@@ -47,7 +47,7 @@ TArray<PathPoint> PathSegment::BreakTheSegment(float distanceBetweenPoints)
 //順を追ってポイントの保存
     for (int i = 0; i < brokenSegments.Num(); i++)
     {
-        retPoints.Add(PathPoint(brokenSegments[i].startPos_, segmentNumber_));
+        retPoints.Add(PathPoint(brokenSegments[i].startPos_, segmentNumber_, i));
     }
     return retPoints;
 }
