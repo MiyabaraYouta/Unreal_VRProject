@@ -31,7 +31,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		double speed;
 	//プレイヤのActor「必ず初期化する！！」
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 		AActor* playerPos_;
 	//パスの半径
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "飛ぶコース")

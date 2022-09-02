@@ -22,7 +22,7 @@ public:
 	PathSegment(FVector, FVector, int);
 	~PathSegment();
 	//ポイントの初期化
-	TArray<PathPoint> BreakTheSegment(int);
+	TArray<PathPoint> BreakTheSegment(float);
 	//このセグメントである位置に一番近いポイント
 	PathPoint		 FindClosestPointToPlayer(FVector);
 private:

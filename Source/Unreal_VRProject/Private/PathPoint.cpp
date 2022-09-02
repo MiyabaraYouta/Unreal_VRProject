@@ -10,9 +10,11 @@ PathPoint::PathPoint(FVector position, int segment): position_(position), segmen
 //デストラクタ
 PathPoint::~PathPoint()
 {
+}PathPoint::PathPoint()
+{
 }
 //距離の関数
 double PathPoint::GetDistanceToCoordinate(FVector coor)
 {
-	return (coor.X - position_.X) * (coor.X - position_.X) + (coor.Y - position_.Y) * (coor.Y - position_.Y) + (coor.Z - position_.Z) * (coor.Z - position_.Z);
+	return FVector::DistSquared(coor, position_);
 }

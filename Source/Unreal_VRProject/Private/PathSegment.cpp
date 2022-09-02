@@ -14,7 +14,7 @@ PathSegment::~PathSegment()
 ///
 
 
-TArray<PathPoint> PathSegment::BreakTheSegment(int iterations)
+TArray<PathPoint> PathSegment::BreakTheSegment(float distanceBetweenPoints)
 {
     //戻り値
     TArray<PathPoint> retPoints;
@@ -22,7 +22,7 @@ TArray<PathPoint> PathSegment::BreakTheSegment(int iterations)
     TArray<PathSegment> brokenSegments;
     brokenSegments.Add(PathSegment(startPos_, endPos_));
 
-    for (int i = 0; i < iterations; i++)
+    do
     {
         //新しく作ったセグメント
         TArray<PathSegment> newlyBrokenSegments;
@@ -42,7 +42,8 @@ TArray<PathPoint> PathSegment::BreakTheSegment(int iterations)
         //使っているセグメントのアップデート
         brokenSegments.Empty();
         brokenSegments = newlyBrokenSegments;
-    }
+    } while (FVector::DistSquared(brokenSegments[0].startPos_, brokenSegments[0].endPos_) > distanceBetweenPoints* distanceBetweenPoints);
+
 //順を追ってポイントの保存
     for (int i = 0; i < brokenSegments.Num(); i++)
     {

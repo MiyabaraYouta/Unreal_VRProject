@@ -9,9 +9,9 @@
  */
 class UNREAL_VRPROJECT_API PathPoint
 {
+public:
 	//ポイントの位置
 	FVector position_;
-public:
 	//「最適化」一回確認した距離をこちらに保存する
 	double checkedDistance;
 	//パスの中でこのポイントはどのセグメントに所属するか

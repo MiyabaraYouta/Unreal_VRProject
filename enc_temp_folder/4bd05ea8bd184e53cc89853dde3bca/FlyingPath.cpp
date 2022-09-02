@@ -8,7 +8,6 @@ AFlyingPath::AFlyingPath()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 //UnityのAwakeかStartと同じ
@@ -55,10 +54,9 @@ void AFlyingPath::Tick(float DeltaTime)
         direction = direction * speed * DeltaTime;
 
        //TODO　パスから出た場合、力を与える処理
-        //playerPos_->SetActorLocation(FVector(playerPos_->GetActorLocation().X + direction.X, playerPos_->GetActorLocation().Y + direction.Y, playerPos_->GetActorLocation().Z + direction.Z));
-       
-        playerPos_->SetActorLocation(FMath::Lerp(playerPos_->GetActorLocation(), playerPos_->GetActorLocation() + direction, DeltaTime * speed));
+        playerPos_->SetActorLocation(FVector(playerPos_->GetActorLocation().X + direction.X, playerPos_->GetActorLocation().Y + direction.Y, playerPos_->GetActorLocation().Z + direction.Z));
 
+       //
         if (GEngine)
             GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Out of Path!"));
     }
