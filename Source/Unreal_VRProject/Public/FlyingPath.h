@@ -30,8 +30,12 @@ public:
 	//パスに戻される力
 	UPROPERTY(EditAnywhere)
 		double speed;
+	UPROPERTY(EditAnywhere)
+		double autoSpeed;
+
+
 	//プレイヤのActor「必ず初期化する！！」
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		AActor* playerPos_;
 	//パスの半径
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "飛ぶコース")
@@ -54,4 +58,5 @@ public:
 	TArray<PathPoint> GetClosestPointsOnAreaX(int currentSegmentOnThePath, int x, TArray<PathSegment> seg, FVector playerPos);
 	//一番近いポイントを探す
 	PathPoint FindClosestPoint(TArray<PathPoint> points, int& currentSegment, FVector playerPos);
+	PathPoint NextPoint(TArray<PathSegment> seg, PathPoint curPoint);
 };

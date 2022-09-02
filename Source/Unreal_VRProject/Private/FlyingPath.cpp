@@ -47,21 +47,16 @@ void AFlyingPath::Tick(float DeltaTime)
     closestPointsToPlayer.Empty();
 
 //パスの範囲内かどうか確認する
-    if (closestPoint.checkedDistance > (pathRadius * pathRadius))
-    {
+
         pointPos = closestPoint.position_;
 
-        FVector direction = pointPos - playerPos_->GetActorLocation();
-        direction = direction * speed * DeltaTime;
+        FVector autoMove = NextPoint(segments, closestPoint).position_ - pointPos;
+        
+        autoMove = autoMove * autoSpeed;
 
-       //TODO　パスから出た場合、力を与える処理
-        //playerPos_->SetActorLocation(FVector(playerPos_->GetActorLocation().X + direction.X, playerPos_->GetActorLocation().Y + direction.Y, playerPos_->GetActorLocation().Z + direction.Z));
-       
-        playerPos_->SetActorLocation(FMath::Lerp(playerPos_->GetActorLocation(), playerPos_->GetActorLocation() + direction, DeltaTime * speed));
+        FVector direction = pointPos - playerPos_->GetActorLocation() + autoMove;
 
-        if (GEngine)
-            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Out of Path!"));
-    }
+        playerPos_->SetActorLocation(FMath::Lerp(playerPos_->GetActorLocation(), playerPos_->GetActorLocation() + direction, DeltaTime*speed));
 
 }
 
@@ -102,4 +97,21 @@ PathPoint AFlyingPath::FindClosestPoint(TArray<PathPoint> points, int &currentSe
 
     currentSegment = retPoint.segment_;
     return retPoint;
+}
+
+
+PathPoint AFlyingPath::NextPoint(TArray<PathSegment> seg, PathPoint curPoint)
+{
+    if (seg[curPoint.segment_].points.Num() == curPoint.numberInSegment_ + 1)
+    {
+        if (curPoint.segment_ + 1 < seg.Num())
+        {
+            return seg[curPoint.segment_ + 1].points[0];
+        }
+        else
+        {
+            return curPoint;
+        }
+    }
+    return seg[curPoint.segment_].points[curPoint.numberInSegment_ + 1];
 }

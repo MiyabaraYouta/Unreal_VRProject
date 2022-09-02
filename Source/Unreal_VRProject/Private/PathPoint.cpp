@@ -4,7 +4,7 @@
 #include "PathPoint.h"
 
 //コンストラクタ
-PathPoint::PathPoint(FVector position, int segment): position_(position), segment_(segment)
+PathPoint::PathPoint(FVector position, int segment, int numberInSegment): position_(position), segment_(segment), numberInSegment_(numberInSegment)
 {
 }
 //デストラクタ
