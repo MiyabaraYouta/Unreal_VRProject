@@ -38,10 +38,6 @@ void AFlyingPath::Tick(float DeltaTime)
     if (closestPointsToPlayer.Num() == 0)
         return;
 
-///ディバッグ
-    if (GEngine)
-        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Distance: %f"), closestPointsToPlayer[0].checkedDistance));
-///
 	
     closestPoint = FindClosestPoint(closestPointsToPlayer, currentSegment_, playerPos_->GetActorLocation());
     closestPointsToPlayer.Empty();
