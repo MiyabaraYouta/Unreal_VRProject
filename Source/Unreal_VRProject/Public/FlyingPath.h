@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		double autoSpeed;
 
+	UPROPERTY(EditAnywhere)
+		double TimeSpeed;
+
 
 	//プレイヤのActor「必ず初期化する！！」
 	UPROPERTY(BlueprintReadWrite)
