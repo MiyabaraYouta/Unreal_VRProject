@@ -54,7 +54,7 @@ void AFlyingPath::Tick(float DeltaTime)
 
         direction *= speed;
 
-        playerPos_->SetActorLocation(FMath::Lerp(playerPos_->GetActorLocation(), playerPos_->GetActorLocation() + direction, DeltaTime*TimeSpeed));
+        playerPos_->SetActorLocation(FMath::Lerp(playerPos_->GetActorLocation(), playerPos_->GetActorLocation() + direction, DeltaTime*1.0));
 
 }
 
