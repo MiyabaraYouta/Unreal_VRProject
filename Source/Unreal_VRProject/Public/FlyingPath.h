@@ -5,10 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PathSegment.h"
+#include "Kismet/GameplayStatics.h"
 #include "FlyingPath.generated.h"
 
 
-UCLASS()
+
+
+UCLASS(Blueprintable)
 class UNREAL_VRPROJECT_API AFlyingPath : public AActor
 {
 	GENERATED_BODY()
@@ -36,19 +39,20 @@ public:
 	UPROPERTY(EditAnywhere)
 		double TimeSpeed;
 
-
 	//プレイヤのActor「必ず初期化する！！」
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere)
 		AActor* playerPos_;
-	//パスの半径
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "飛ぶコース")
-		double pathRadius;
 	//このフレームでキャラクターに一番近いポイント「数はsearchDepthによって違う」
 	TArray<PathPoint> closestPointsToPlayer;
 	//力を与えるために使う一番キャラクターに近いポイント
 	PathPoint closestPoint;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "飛ぶコース")
 		FVector pointPos;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "飛ぶコース")
+		FVector nextPointPos;
+
+
+
 	int currentSegment_;
 protected:
 	// Called when the game starts or when spawned
@@ -62,4 +66,6 @@ public:
 	//一番近いポイントを探す
 	PathPoint FindClosestPoint(TArray<PathPoint> points, int& currentSegment, FVector playerPos);
 	PathPoint NextPoint(TArray<PathSegment> seg, PathPoint curPoint);
+
+	void PathMovement(float fixedTime);
 };
