@@ -15,7 +15,9 @@ void AFlyingPath::BeginPlay()
 {
 	Super::BeginPlay();
 
-    playerPos_ = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+    if(actorIsDefault)
+        actorToMove = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
 //セグメントとポイントの初期化
     for (int i = 0; i < pathCheckpoints.Num() - 1; i++)
     {
@@ -33,13 +35,13 @@ void AFlyingPath::Tick(float DeltaTime)
 
 
 //プレイヤに「searchDepth」セグメントの中から一番近いポイントを探す
-    closestPointsToPlayer = GetClosestPointsOnAreaX(currentSegment_, searchDepth, segments, playerPos_->GetActorLocation());
+    closestPointsToPlayer = GetClosestPointsOnAreaX(currentSegment_, searchDepth, segments, actorToMove->GetActorLocation());
 //リーク予防
     if (closestPointsToPlayer.Num() == 0)
         return;
 
 	
-    closestPoint = FindClosestPoint(closestPointsToPlayer, currentSegment_, playerPos_->GetActorLocation());
+    closestPoint = FindClosestPoint(closestPointsToPlayer, currentSegment_, actorToMove->GetActorLocation());
     closestPointsToPlayer.Empty();
 
 //パスの範囲内かどうか確認する
@@ -112,9 +114,9 @@ void AFlyingPath::PathMovement(float fixedTime)
 
     autoMove = autoMove * autoSpeed;
 
-    FVector direction = pointPos - playerPos_->GetActorLocation() + autoMove;
+    FVector direction = pointPos - actorToMove->GetActorLocation() + autoMove;
 
     direction *= speed;
 
-    playerPos_->SetActorLocation(FMath::Lerp(playerPos_->GetActorLocation(), playerPos_->GetActorLocation() + direction, fixedTime * 1.0f));
+    actorToMove->SetActorLocation(FMath::Lerp(actorToMove->GetActorLocation(), actorToMove->GetActorLocation() + direction, fixedTime * 1.0f));
 }

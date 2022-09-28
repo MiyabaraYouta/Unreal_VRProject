@@ -39,16 +39,21 @@ public:
 	UPROPERTY(EditAnywhere)
 		double TimeSpeed;
 
+
+	UPROPERTY(EditAnywhere, Category = "移動するオブジェクト")
+		bool actorIsDefault = true;
+
 	//プレイヤのActor「必ず初期化する！！」
-	UPROPERTY(VisibleAnywhere)
-		AActor* playerPos_;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "!actorIsDefault"), Category = "移動するオブジェクト")
+		AActor* actorToMove;
+
 	//このフレームでキャラクターに一番近いポイント「数はsearchDepthによって違う」
 	TArray<PathPoint> closestPointsToPlayer;
 	//力を与えるために使う一番キャラクターに近いポイント
 	PathPoint closestPoint;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "飛ぶコース")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "飛ぶコース（デバッグ）")
 		FVector pointPos;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "飛ぶコース")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "飛ぶコース（デバッグ）")
 		FVector nextPointPos;
 
 
