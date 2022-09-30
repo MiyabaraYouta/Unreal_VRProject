@@ -7,15 +7,17 @@
 AFlyingPath::AFlyingPath()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 //UnityのAwakeかStartと同じ
 void AFlyingPath::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+    if(actorIsDefault)
+        actorToMove = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
 //セグメントとポイントの初期化
     for (int i = 0; i < pathCheckpoints.Num() - 1; i++)
     {
@@ -33,29 +35,21 @@ void AFlyingPath::Tick(float DeltaTime)
 
 
 //プレイヤに「searchDepth」セグメントの中から一番近いポイントを探す
-    closestPointsToPlayer = GetClosestPointsOnAreaX(currentSegment_, searchDepth, segments, playerPos_->GetActorLocation());
+    closestPointsToPlayer = GetClosestPointsOnAreaX(currentSegment_, searchDepth, segments, actorToMove->GetActorLocation());
 //リーク予防
     if (closestPointsToPlayer.Num() == 0)
         return;
 
 	
-    closestPoint = FindClosestPoint(closestPointsToPlayer, currentSegment_, playerPos_->GetActorLocation());
+    closestPoint = FindClosestPoint(closestPointsToPlayer, currentSegment_, actorToMove->GetActorLocation());
     closestPointsToPlayer.Empty();
 
 //パスの範囲内かどうか確認する
 
         pointPos = closestPoint.position_;
+        nextPointPos = NextPoint(segments, closestPoint).position_;
 
-        FVector autoMove = NextPoint(segments, closestPoint).position_ - pointPos;
-        
-        autoMove = autoMove * autoSpeed;
-
-        FVector direction = pointPos - playerPos_->GetActorLocation() + autoMove;
-
-        direction *= speed;
-
-        playerPos_->SetActorLocation(FMath::Lerp(playerPos_->GetActorLocation(), playerPos_->GetActorLocation() + direction, DeltaTime*1.0));
-
+        PathMovement(DeltaTime);
 }
 
 TArray<PathPoint> AFlyingPath::GetClosestPointsOnAreaX(int currentSegmentOnThePath, int x, TArray<PathSegment> seg, FVector playerPos)
@@ -112,4 +106,17 @@ PathPoint AFlyingPath::NextPoint(TArray<PathSegment> seg, PathPoint curPoint)
         }
     }
     return seg[curPoint.segment_].points[curPoint.numberInSegment_ + 1];
+}
+
+void AFlyingPath::PathMovement(float fixedTime)
+{
+    FVector autoMove = nextPointPos - pointPos;
+
+    autoMove = autoMove * autoSpeed;
+
+    FVector direction = pointPos - actorToMove->GetActorLocation() + autoMove;
+
+    direction *= speed;
+
+    actorToMove->SetActorLocation(FMath::Lerp(actorToMove->GetActorLocation(), actorToMove->GetActorLocation() + direction, fixedTime * 1.0f));
 }
