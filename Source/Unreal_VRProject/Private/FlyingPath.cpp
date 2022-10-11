@@ -91,6 +91,96 @@ PathPoint AFlyingPath::FindClosestPoint(TArray<PathPoint> points, int &currentSe
     return retPoint;
 }
 
+void AFlyingPath::NextPoint(int differenceFromStartPosition, TArray<PathSegment> seg, PathPoint curPoint)
+{
+    int startPoint;
+    int startSegment;
+
+    int endPoint;
+    int endSegment;
+
+    startPoint = curPoint.numberInSegment_;
+    startSegment = seg[curPoint.segment_].segmentNumber_;
+
+    //発生する位置
+    if (startPoint - differenceFromStartPosition < 0)
+    {
+        if (seg[curPoint.segment_].segmentNumber_ == 0)
+        {
+            startPoint = 0;
+            startSegment = 0;
+        }
+        else
+        {
+            startPoint -= differenceFromStartPosition;
+            do
+            {
+                if (startPoint < 0)
+                {
+                    startSegment--;
+                    startPoint = seg[curPoint.numberInSegment_].points.Num() - abs(startPoint);
+                }
+                else
+                {
+                    break;
+                }
+
+                if (startSegment < 0)
+                {
+                    startSegment = 0;
+                    startPoint = 0;
+                    break;
+                }
+
+            } while (startSegment >= 0);
+        }
+    }
+    else
+    {
+        startPoint -= differenceFromStartPosition;
+    }
+    //破棄する場所
+    if (curPoint.numberInSegment_ + differenceFromStartPosition > seg[curPoint.numberInSegment_].points.Num() - 1)
+    {
+        if (seg[curPoint.segment_].segmentNumber_ == seg.Num() - 1)
+        {
+            endPoint = seg[curPoint.segment_].points.Num() - 1;
+            endSegment = seg.Num() - 1;
+        }
+        else
+        {
+            startPoint += differenceFromStartPosition;
+            do
+            {
+                if (startPoint > seg[curPoint.segment_].points.Num() - 1)
+                {
+                    startPoint -= seg[curPoint.segment_].points.Num();
+                    startSegment++;
+                }
+                else
+                {
+                    break;
+                }
+
+                if (startSegment >= seg.Num())
+                {
+                    endPoint = seg[curPoint.segment_].points.Num() - 1;
+                    endSegment = seg.Num() - 1;
+                    break;
+                }
+
+            } while (startSegment >= 0);
+
+        }
+    }
+    else
+    {
+        startPoint += differenceFromStartPosition;
+    }
+
+
+
+}
 
 PathPoint AFlyingPath::NextPoint(TArray<PathSegment> seg, PathPoint curPoint)
 {

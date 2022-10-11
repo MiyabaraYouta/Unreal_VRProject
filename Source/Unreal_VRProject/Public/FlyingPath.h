@@ -17,47 +17,57 @@ class UNREAL_VRPROJECT_API AFlyingPath : public AActor
 	GENERATED_BODY()
 	
 
-public:	
-//コンストラクタ
+public:
 	AFlyingPath();
-	//セグメント
-	TArray<PathSegment> segments;
-	//チェックポイントの配列
-	UPROPERTY(EditAnywhere)
+
+		TArray<PathSegment> segments;
+
+	UPROPERTY(EditAnywhere, Category = "チェックポイントの配列")
+
 		TArray<AActor*> pathCheckpoints;
-	//セグメントでの最低距離を持っているポイントを探す範囲「セグメント」
-	UPROPERTY(EditAnywhere)
-	int searchDepth;
-	UPROPERTY(EditAnywhere)
+
+	UPROPERTY(EditAnywhere, Category = "探索の深さ、いくつセグメントで最短距離を同時に探しているか")
+
+		int searchDepth;
+
+	UPROPERTY(EditAnywhere, Category = "セグメントにある点の間の距離")
+
 		float distanceBetweenPointsOnSegment;
-	//パスに戻される力
-	UPROPERTY(EditAnywhere)
+
+	UPROPERTY(EditAnywhere, Category = "パスに戻させる力・速度")
+
 		double speed;
-	UPROPERTY(EditAnywhere)
+
+	UPROPERTY(EditAnywhere, Category = "自動的にパスを進む速度")
+
 		double autoSpeed;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "アルゴリズムの全体速度の管理")
+
 		double TimeSpeed;
 
+	UPROPERTY(EditAnywhere, Category = "使いたいオブジェクトはStartPosで発生するPawnですか？")
 
-	UPROPERTY(EditAnywhere, Category = "移動するオブジェクト")
 		bool actorIsDefault = true;
 
-	//プレイヤのActor「必ず初期化する！！」
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "!actorIsDefault"), Category = "移動するオブジェクト")
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "!actorIsDefault"), Category = "StartPos発生するPawn以外のオブジェクトを設定してください")
+
 		AActor* actorToMove;
 
+	UPROPERTY(EditAnywhere, Category = "エフェクトの速度")
+
+		double effectSpeed;
+
+
+	//今一番近い点の位置
+	FVector pointPos;
+	//次の点の位置
+	FVector nextPointPos;
 	//このフレームでキャラクターに一番近いポイント「数はsearchDepthによって違う」
 	TArray<PathPoint> closestPointsToPlayer;
 	//力を与えるために使う一番キャラクターに近いポイント
 	PathPoint closestPoint;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "飛ぶコース（デバッグ）")
-		FVector pointPos;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "飛ぶコース（デバッグ）")
-		FVector nextPointPos;
-
-
-
+	//今飛んでいるセグメント
 	int currentSegment_;
 protected:
 	// Called when the game starts or when spawned
@@ -70,6 +80,9 @@ public:
 	TArray<PathPoint> GetClosestPointsOnAreaX(int currentSegmentOnThePath, int x, TArray<PathSegment> seg, FVector playerPos);
 	//一番近いポイントを探す
 	PathPoint FindClosestPoint(TArray<PathPoint> points, int& currentSegment, FVector playerPos);
+
+
+	void NextPoint(int differenceFromStartPosition, TArray<PathSegment> seg, PathPoint curPoint);
 	PathPoint NextPoint(TArray<PathSegment> seg, PathPoint curPoint);
 
 	void PathMovement(float fixedTime);
