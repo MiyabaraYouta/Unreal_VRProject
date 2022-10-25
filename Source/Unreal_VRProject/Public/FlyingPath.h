@@ -71,10 +71,6 @@ UPROPERTY(BlueprintReadOnly, Category = "Variable|Blueprint")
 		int startPoint = 0;
 UPROPERTY(BlueprintReadOnly, Category = "Variable|Blueprint")
 		int startSegment = 0;
-UPROPERTY(BlueprintReadOnly, Category = "Variable|Blueprint")
-		int endPoint = 0;
-UPROPERTY(BlueprintReadOnly, Category = "Variable|Blueprint")
-		int endSegment = 0;
 
 
 //今一番近い点の位置 

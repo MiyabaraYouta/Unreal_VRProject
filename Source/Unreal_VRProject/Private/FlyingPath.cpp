@@ -114,9 +114,6 @@ void AFlyingPath::SpawnEffects(int differenceFromStartPosition, TArray<PathSegme
     startPoint = curPoint.numberInSegment_;
     startSegment = seg[curPoint.segment_].segmentNumber_;
 
-    endPoint = curPoint.numberInSegment_;
-    endSegment = seg[curPoint.segment_].segmentNumber_;
-
 //発生する位置
 if (startPoint - differenceFromStartPosition < 0)
     {
@@ -132,7 +129,15 @@ if (startPoint - differenceFromStartPosition < 0)
             {
                 if (startPoint < 0)
                 {
-                    startSegment--;
+                    if(startSegment > 0)
+                        startSegment--;
+                    else
+                    {
+                        startSegment = 0;
+                        startPoint = 0;
+                        break;
+                    }
+
                     startPoint = seg[startSegment].points.Num() - abs(startPoint);
                 }
                 else
@@ -154,45 +159,6 @@ if (startPoint - differenceFromStartPosition < 0)
     {
         startSegment = seg[curPoint.segment_].segmentNumber_;
         startPoint -= differenceFromStartPosition;
-    }
-//破棄する場所
-    if (curPoint.numberInSegment_ + differenceFromStartPosition > seg[curPoint.segment_].points.Num() - 1)
-    {
-        if (seg[curPoint.segment_].segmentNumber_ == seg.Num() - 1)
-        {
-            endPoint = seg[curPoint.segment_].points.Num() - 1;
-            endSegment = seg.Num() - 1;
-        }
-        else
-        {
-            endPoint += differenceFromStartPosition;
-            do
-            {
-                if (endPoint > seg[curPoint.segment_].points.Num() - 1)
-                {
-                    endPoint -= seg[endSegment].points.Num();
-                    endSegment++;
-                }
-                else
-                {
-                    break;
-                }
-
-                if (endSegment >= seg.Num())
-                {
-                    endPoint = seg[curPoint.segment_].points.Num() - 1;
-                    endSegment = seg.Num() - 1;
-                    break;
-                }
-
-            } while (endSegment >= 0);
-           
-        }
-    }
-    else
-    {
-        endSegment = seg[curPoint.segment_].segmentNumber_;
-        endPoint += differenceFromStartPosition;
     }
 
     UWorld* world = GetWorld();
