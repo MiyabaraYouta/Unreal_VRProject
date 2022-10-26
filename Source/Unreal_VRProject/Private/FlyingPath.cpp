@@ -34,24 +34,35 @@ void AFlyingPath::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-//プレイヤに「searchDepth」セグメントの中から一番近いポイントを探す
-    closestPointsToPlayer = GetClosestPointsOnAreaX(currentSegment_, searchDepth, segments, actorToMove->GetActorLocation());
-//リーク予防
-    if (closestPointsToPlayer.Num() == 0)
-        return;
+//一番近いポイントを探す
+        closestPoint = ClosestPoint(currentSegment_, searchDepth, segments, actorToMove);
 
-	
-    closestPoint = FindClosestPoint(closestPointsToPlayer, currentSegment_, actorToMove->GetActorLocation());
-    closestPointsToPlayer.Empty();
-
-//パスの範囲内かどうか確認する
-
+//移動させる
         pointPos = closestPoint.position_;
         nextPointPos = NextPoint(segments, closestPoint).position_;
 
         PathMovement(DeltaTime);
+
+//Effectsを発生する
+        currentTick += DeltaTime;
+        if (currentTick > spawnTime)
+        {
+            currentTick = 0;
+            SpawnEffects(effectSpawnAndDestroyDistance, segments, closestPoint);
+        }
 }
 
+/// <summary>
+/// 一番近いポイントを探す
+/// </summary>
+PathPoint AFlyingPath::ClosestPoint(int& currentSeg, int searchD, TArray<PathSegment> seg, AActor* act)
+{
+    TArray<PathPoint> closestPoints = GetClosestPointsOnAreaX(currentSeg, searchD, seg, act->GetActorLocation());
+    PathPoint closestP = FindClosestPoint(closestPoints, currentSeg, act->GetActorLocation());
+    currentSeg = closestP.segment_;
+    closestPointsToPlayer.Empty();
+    return closestP;
+}
 TArray<PathPoint> AFlyingPath::GetClosestPointsOnAreaX(int currentSegmentOnThePath, int x, TArray<PathSegment> seg, FVector playerPos)
 {
     TArray<PathPoint> ret;
@@ -68,7 +79,6 @@ TArray<PathPoint> AFlyingPath::GetClosestPointsOnAreaX(int currentSegmentOnThePa
     }
     return ret;
 }
-
 PathPoint AFlyingPath::FindClosestPoint(TArray<PathPoint> points, int &currentSegment, FVector playerPos)
 {
     double distance;
@@ -92,6 +102,80 @@ PathPoint AFlyingPath::FindClosestPoint(TArray<PathPoint> points, int &currentSe
 }
 
 
+
+/// <summary>
+/// エフェクトを発生して、最初と最後の位置を計算する
+/// </summary>
+/// <param name="differenceFromStartPosition"></param>
+/// <param name="seg"></param>
+/// <param name="curPoint"></param>
+void AFlyingPath::SpawnEffects(int differenceFromStartPosition, TArray<PathSegment> seg, PathPoint curPoint)
+{
+    startPoint = curPoint.numberInSegment_;
+    startSegment = seg[curPoint.segment_].segmentNumber_;
+
+//発生する位置
+if (startPoint - differenceFromStartPosition < 0)
+    {
+        if (seg[curPoint.segment_].segmentNumber_ == 0)
+        {
+            startPoint = 0;
+            startSegment = 0;
+        }
+        else
+        {
+            startPoint -= differenceFromStartPosition;
+            do
+            {
+                if (startPoint < 0)
+                {
+                    if(startSegment > 0)
+                        startSegment--;
+                    else
+                    {
+                        startSegment = 0;
+                        startPoint = 0;
+                        break;
+                    }
+
+                    startPoint = seg[startSegment].points.Num() - abs(startPoint);
+                }
+                else
+                {
+                    break;
+                }
+
+                if (startSegment < 0)
+                {
+                    startSegment = 0;
+                    startPoint = 0;
+                    break;
+                }
+
+            } while (startSegment >= 0);
+        }
+    }
+    else
+    {
+        startSegment = seg[curPoint.segment_].segmentNumber_;
+        startPoint -= differenceFromStartPosition;
+    }
+
+    UWorld* world = GetWorld();
+    FActorSpawnParameters spawnParams;
+    spawnParams.Owner = this;
+    FRotator rotator;
+    FVector spawnLocation = segments[startSegment].points[startPoint].position_;
+    AActor* spawned = world->SpawnActor<AActor>(effect, spawnLocation, rotator, spawnParams);
+    
+}
+
+/// <summary>
+/// 次のポイントの取得
+/// </summary>
+/// <param name="seg"></param>
+/// <param name="curPoint"></param>
+/// <returns></returns>
 PathPoint AFlyingPath::NextPoint(TArray<PathSegment> seg, PathPoint curPoint)
 {
     if (seg[curPoint.segment_].points.Num() == curPoint.numberInSegment_ + 1)
@@ -107,7 +191,10 @@ PathPoint AFlyingPath::NextPoint(TArray<PathSegment> seg, PathPoint curPoint)
     }
     return seg[curPoint.segment_].points[curPoint.numberInSegment_ + 1];
 }
-
+/// <summary>
+/// プレイヤーを前に移動させるクラス
+/// </summary>
+/// <param name="fixedTime"></param>
 void AFlyingPath::PathMovement(float fixedTime)
 {
     FVector autoMove = nextPointPos - pointPos;
@@ -119,4 +206,23 @@ void AFlyingPath::PathMovement(float fixedTime)
     direction *= speed;
 
     actorToMove->SetActorLocation(FMath::Lerp(actorToMove->GetActorLocation(), actorToMove->GetActorLocation() + direction, fixedTime * 1.0f));
+}
+
+
+/// <summary>
+/// エフェクトを前に移動指せるクラス
+/// </summary>
+void AFlyingPath::MoveForwardClass(int effectCurrentSegment, int& outNewSegment, int& outCurPoint ,float effectSpeed, AActor* effectToMove, float efectFixedTime)
+{
+    PathPoint closestP = ClosestPoint(effectCurrentSegment, 1, segments, effectToMove);
+
+    outNewSegment = closestP.segment_;
+    outCurPoint = closestP.numberInSegment_;
+    FVector pointP = closestP.position_;
+    FVector nextPointP = NextPoint(segments, closestP).position_;
+
+    FVector movement = nextPointP - pointP;
+    movement *= effectSpeed;
+
+    effectToMove->SetActorLocation(FMath::Lerp(effectToMove->GetActorLocation(), effectToMove->GetActorLocation() + movement, efectFixedTime * 1.0f));
 }
